@@ -23,143 +23,200 @@
         </header>
 
         <main>
-            <!-- Input Section -->
-            <section class="section input-section">
-                <h2 class="section-title">Configuration</h2>
-                
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label for="input-type">Input Method</label>
-                        <select id="input-type" onchange="toggleInputType()">
-                            <option value="messages">Two Messages</option>
-                            <option value="image">QR Image + Target Message</option>
-                        </select>
-                    </div>
-
-                    <div id="messages-input" class="form-group-container">
-                        <div class="form-group">
-                            <label for="message-a">Original Message (A)</label>
-                            <input type="text" id="message-a" placeholder="Enter original message">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-b">Target Message (B)</label>
-                            <input type="text" id="message-b" placeholder="Enter target message" required>
-                        </div>
-                    </div>
-
-                    <div id="image-input" class="form-group-container" style="display: none;">
-                        <div class="form-group">
-                            <label for="qr-file">QR Code Image</label>
-                            <input type="file" id="qr-file" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-b-image">Target Message</label>
-                            <input type="text" id="message-b-image" placeholder="Enter target message" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <div class="info-note">
-                            <strong>Note:</strong> Error Correction Level is automatically optimized. 
-                            All 4 levels (L, M, Q, H) are tested with all algorithms (QArt, ILP, Hybrid) to find the minimum module squares to change.
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" id="use-exact" checked>
-                                <span>Use optimal algorithm</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" id="respect-ecc" checked>
-                                <span>Respect ECC capacity</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <button id="transform-btn" onclick="transformQR()" class="btn-primary">
-                            <span class="btn-text">Transform</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Loading State -->
-            <div id="loading" class="loading-state" style="display: none;">
-                <div class="loading-spinner"></div>
-                <p>Processing transformation...</p>
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <button class="tab-button active" onclick="switchTab('input')" id="tab-input">
+                    <span class="tab-icon">⚙️</span>
+                    <span>Transformation</span>
+                </button>
+                <button class="tab-button" onclick="switchTab('results')" id="tab-results" disabled>
+                    <span class="tab-icon">📊</span>
+                    <span>Results</span>
+                </button>
+                <button class="tab-button" onclick="switchTab('insights')" id="tab-insights" disabled>
+                    <span class="tab-icon">🔍</span>
+                    <span>Insights</span>
+                </button>
             </div>
 
-            <!-- Error State -->
-            <div id="error" class="error-state" style="display: none;"></div>
-
-            <!-- Results Section -->
-            <div id="results-section" class="results-section" style="display: none;">
-                <!-- Stats Overview -->
-                <section class="section stats-section">
-                    <h2 class="section-title">Transformation Summary</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-label">Module Squares to Change</div>
-                            <div class="stat-value" id="min-flips">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Within ECC Capacity</div>
-                            <div class="stat-value" id="within-ecc">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Change Percentage</div>
-                            <div class="stat-value" id="change-pct">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Best Algorithm</div>
-                            <div class="stat-value" id="algorithm-name">-</div>
+            <!-- Input Tab -->
+            <div id="tab-content-input" class="tab-content active">
+                <section class="section input-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Configuration</h2>
+                        <button class="info-toggle" onclick="toggleInfo()" title="Show/Hide Info">
+                            <span>ℹ️</span>
+                        </button>
+                    </div>
+                    
+                    <div id="info-panel" class="info-panel" style="display: none;">
+                        <div class="info-note">
+                            <strong>Automatic Optimization:</strong> The system automatically tests all 4 ECC levels (L ~7%, M ~15%, Q ~25%, H ~30%) with all algorithms (QArt, ILP, Hybrid) to find the minimum module squares to change. The best combination is selected automatically.
                         </div>
                     </div>
-                    <div id="algorithm-comparison" class="algorithm-comparison" style="display: none;">
-                        <h3 class="comparison-title">Algorithm Comparison</h3>
-                        <div id="algorithm-comparison-content"></div>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="input-type">Input Method</label>
+                            <select id="input-type" onchange="toggleInputType()" class="select-input">
+                                <option value="messages">Two Messages</option>
+                                <option value="image">QR Image + Target Message</option>
+                            </select>
+                        </div>
+
+                        <div id="messages-input" class="form-group-container">
+                            <div class="form-group">
+                                <label for="message-a">Original Message (A)</label>
+                                <input type="text" id="message-a" placeholder="Enter original message" class="text-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-b">Target Message (B)</label>
+                                <input type="text" id="message-b" placeholder="Enter target message" required class="text-input">
+                            </div>
+                        </div>
+
+                        <div id="image-input" class="form-group-container" style="display: none;">
+                            <div class="form-group">
+                                <label for="qr-file">QR Code Image</label>
+                                <input type="file" id="qr-file" accept="image/*" class="file-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-b-image">Target Message</label>
+                                <input type="text" id="message-b-image" placeholder="Enter target message" required class="text-input">
+                            </div>
+                        </div>
+
+                        <!-- Advanced Options Dropdown -->
+                        <div class="form-group full-width">
+                            <details class="advanced-options">
+                                <summary class="advanced-toggle">
+                                    <span>⚙️ Advanced Options</span>
+                                </summary>
+                                <div class="advanced-content">
+                                    <div class="checkbox-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="use-exact" checked>
+                                            <span>Use optimal algorithm</span>
+                                        </label>
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" id="respect-ecc" checked>
+                                            <span>Respect ECC capacity</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <button id="transform-btn" onclick="transformQR()" class="btn-primary">
+                                <span class="btn-icon">🚀</span>
+                                <span class="btn-text">Transform QR Code</span>
+                            </button>
+                        </div>
                     </div>
                 </section>
 
-                <!-- QR Code Visualization -->
-                <section class="section visualization-section">
-                    <h2 class="section-title">QR Code Comparison</h2>
-                    <div class="qr-grid">
-                        <div class="qr-card">
-                            <div class="qr-label">Original (A)</div>
-                            <div class="qr-image-container">
-                                <img id="original-image" src="" alt="Original QR Code">
-                            </div>
-                        </div>
-                        <div class="qr-card">
-                            <div class="qr-label">Target (B)</div>
-                            <div class="qr-image-container">
-                                <img id="target-image" src="" alt="Target QR Code">
-                            </div>
-                        </div>
-                        <div class="qr-card">
-                            <div class="qr-label">Transformed</div>
-                            <div class="qr-image-container">
-                                <img id="transformed-image" src="" alt="Transformed QR Code">
-                            </div>
-                        </div>
-                        <div class="qr-card">
-                            <div class="qr-label">Changes (Red)</div>
-                            <div class="qr-image-container">
-                                <img id="changes-image" src="" alt="Changes Highlighted">
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <!-- Loading State -->
+                <div id="loading" class="loading-state" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Processing transformation...</p>
+                    <p class="loading-subtitle">Testing all algorithms and ECC levels</p>
+                </div>
 
-                <!-- Insights -->
-                <section class="section insights-section">
-                    <h2 class="section-title">Detailed Insights</h2>
-                    <div id="insights-content" class="insights-content"></div>
-                </section>
+                <!-- Error State -->
+                <div id="error" class="error-state" style="display: none;"></div>
+            </div>
+
+            <!-- Results Tab -->
+            <div id="tab-content-results" class="tab-content">
+                <div id="results-section" class="results-section" style="display: none;">
+                    <!-- Stats Overview -->
+                    <section class="section stats-section">
+                        <h2 class="section-title">Transformation Summary</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">🔢</div>
+                                <div class="stat-label">Module Squares to Change</div>
+                                <div class="stat-value" id="min-flips">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">✓</div>
+                                <div class="stat-label">Within ECC Capacity</div>
+                                <div class="stat-value" id="within-ecc">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-label">Change Percentage</div>
+                                <div class="stat-value" id="change-pct">-</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🏆</div>
+                                <div class="stat-label">Best Algorithm</div>
+                                <div class="stat-value" id="algorithm-name">-</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Algorithm Comparison (Collapsible) -->
+                    <section class="section">
+                        <details class="collapsible-section">
+                            <summary class="collapsible-header">
+                                <h2 class="section-title inline-title">Algorithm Comparison</h2>
+                                <span class="collapse-icon">▼</span>
+                            </summary>
+                            <div id="algorithm-comparison" class="algorithm-comparison" style="display: none;">
+                                <div id="algorithm-comparison-content"></div>
+                            </div>
+                        </details>
+                    </section>
+
+                    <!-- QR Code Visualization -->
+                    <section class="section visualization-section">
+                        <h2 class="section-title">QR Code Comparison</h2>
+                        <div class="qr-grid">
+                            <div class="qr-card">
+                                <div class="qr-label">Original (A)</div>
+                                <div class="qr-image-container">
+                                    <img id="original-image" src="" alt="Original QR Code">
+                                </div>
+                            </div>
+                            <div class="qr-card">
+                                <div class="qr-label">Target (B)</div>
+                                <div class="qr-image-container">
+                                    <img id="target-image" src="" alt="Target QR Code">
+                                </div>
+                            </div>
+                            <div class="qr-card">
+                                <div class="qr-label">Transformed</div>
+                                <div class="qr-image-container">
+                                    <img id="transformed-image" src="" alt="Transformed QR Code">
+                                </div>
+                            </div>
+                            <div class="qr-card">
+                                <div class="qr-label">Changes (Red)</div>
+                                <div class="qr-image-container">
+                                    <img id="changes-image" src="" alt="Changes Highlighted">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div id="no-results" class="no-results">
+                    <p>No transformation results yet. Go to the <strong>Transformation</strong> tab to get started.</p>
+                </div>
+            </div>
+
+            <!-- Insights Tab -->
+            <div id="tab-content-insights" class="tab-content">
+                <div id="insights-section" class="insights-section" style="display: none;">
+                    <section class="section">
+                        <h2 class="section-title">Detailed Insights</h2>
+                        <div id="insights-content" class="insights-content"></div>
+                    </section>
+                </div>
+                <div id="no-insights" class="no-results">
+                    <p>No insights available yet. Complete a transformation to see detailed analysis.</p>
+                </div>
             </div>
         </main>
     </div>

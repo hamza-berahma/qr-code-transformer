@@ -1,3 +1,37 @@
+// Tab switching functionality
+function switchTab(tabName) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+        button.disabled = false;
+    });
+    
+    // Show selected tab content
+    const selectedContent = document.getElementById(`tab-content-${tabName}`);
+    if (selectedContent) {
+        selectedContent.classList.add('active');
+    }
+    
+    // Activate selected tab button
+    const selectedButton = document.getElementById(`tab-${tabName}`);
+    if (selectedButton) {
+        selectedButton.classList.add('active');
+    }
+}
+
+// Toggle info panel
+function toggleInfo() {
+    const infoPanel = document.getElementById('info-panel');
+    if (infoPanel) {
+        infoPanel.style.display = infoPanel.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
 function toggleInputType() {
     const inputType = document.getElementById('input-type').value;
     const messagesInput = document.getElementById('messages-input');
@@ -182,14 +216,38 @@ function displayResults(result) {
     
     // Display insights
     const insightsContent = document.getElementById('insights-content');
+    const insightsSection = document.getElementById('insights-section');
+    const noInsights = document.getElementById('no-insights');
+    
     if (insightsContent && result.insights) {
         insightsContent.innerHTML = generateInsightsHTML(result.insights);
+        if (insightsSection) insightsSection.style.display = 'block';
+        if (noInsights) noInsights.style.display = 'none';
     } else if (!insightsContent) {
         console.warn('insights-content element not found');
     }
     
     // Smooth scroll to results
     resultsSection.style.display = 'block';
+    
+    // Enable and switch to Results tab
+    const resultsTab = document.getElementById('tab-results');
+    const insightsTab = document.getElementById('tab-insights');
+    if (resultsTab) {
+        resultsTab.disabled = false;
+        resultsTab.classList.add('active');
+    }
+    if (insightsTab) {
+        insightsTab.disabled = false;
+    }
+    
+    // Hide no-results message
+    const noResults = document.getElementById('no-results');
+    if (noResults) noResults.style.display = 'none';
+    
+    // Switch to results tab
+    switchTab('results');
+    
     setTimeout(() => {
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
