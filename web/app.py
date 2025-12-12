@@ -255,6 +255,15 @@ async def transform_qr(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/health")
+async def health_simple():
+    """Simple health check endpoint for Railway.
+    
+    Railway expects a 200 OK response. This endpoint is lightweight
+    and doesn't require any imports beyond FastAPI.
+    """
+    return {"status": "ok"}
+
 @app.get("/api/health")
 async def health():
     """Health check endpoint - lightweight, no imports needed."""
