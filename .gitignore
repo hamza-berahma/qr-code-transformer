@@ -16,8 +16,6 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -37,33 +35,47 @@ ENV/
 *~
 .DS_Store
 
-# Testing
+# Testing & Coverage
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .tox/
 .hypothesis/
 
-# Jupyter
-.ipynb_checkpoints/
+# Jupyter Notebooks
+.ipynb_checkpoints
 *.ipynb
 
-# Project specific
-*.png
-*.jpg
-*.jpeg
-*.gif
-!web/static/favicon.png
-!web/static/favicon.ico
-examples/*.png
-examples/*.jpg
-examples/transformation_result.png
-/tmp/
+# LaTeX / Paper
+paper/
+*.aux
+*.bbl
+*.blg
 *.log
+*.out
+*.pdf
+*.synctex.gz
+*.toc
+*.fdb_latexmk
+*.fls
+
+# Environment variables
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+Open
+docker-fix.sh
+*.bak
+*.swp
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Paper directory - exclude entire paper folder
-paper/
+# Project specific
+htmlcov/
+coverage.xml
