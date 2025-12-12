@@ -21,10 +21,13 @@ docker run -p 8000:8000 qr-transformer
 
 1. Install Railway CLI: `npm i -g @railway/cli`
 2. Login: `railway login`
-3. Deploy: `railway up`
-4. Done! Get your URL from Railway dashboard
+3. Deploy: `railway up` or connect via GitHub
+4. Railway will automatically detect the Dockerfile or use the start command
+5. Done! Get your URL from Railway dashboard
 
 **Time: ~3 minutes** (includes account setup)
+
+**Note:** Railway automatically sets the `PORT` environment variable. The app is configured to use it.
 
 ### Option 3: Render.com (~5 minutes)
 
