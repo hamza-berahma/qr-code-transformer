@@ -1,0 +1,30 @@
+# Railway Configuration
+# This file configures how Railway builds and deploys your application
+
+[build]
+# Use Nixpacks for automatic Python detection
+builder = "nixpacks"
+
+[deploy]
+# Start command - Railway will set PORT automatically
+startCommand = "python -m uvicorn web.app:app --host 0.0.0.0"
+
+# Health check configuration
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+
+# Restart policy
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+# Resource limits (adjust based on your Railway plan)
+[deploy.resources]
+memory = 512  # MB - minimum for Python apps
+cpu = 0.5     # CPU shares
+
+# Environment variables (can be overridden in Railway dashboard)
+[deploy.env]
+PYTHONUNBUFFERED = "1"
+PYTHONDONTWRITEBYTECODE = "1"
+WORKERS = "1"
+
