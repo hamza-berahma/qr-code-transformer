@@ -188,7 +188,35 @@ function displayResults(result) {
         console.warn('insights-content element not found');
     }
     
+    // Smooth scroll to results
     resultsSection.style.display = 'block';
+    setTimeout(() => {
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    
+    // Animate stat cards
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100 + (index * 100));
+    });
+    
+    // Animate QR cards
+    const qrCards = document.querySelectorAll('.qr-card');
+    qrCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 300 + (index * 100));
+    });
 }
 
 function generateInsightsHTML(insights) {
