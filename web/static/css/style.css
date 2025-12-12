@@ -145,9 +145,6 @@ main {
     cursor: not-allowed;
 }
 
-.tab-icon {
-    font-size: 1.1em;
-}
 
 .tab-content {
     display: none;
@@ -205,8 +202,12 @@ main {
     border-radius: var(--border-radius);
     padding: var(--spacing-xs) var(--spacing-sm);
     cursor: pointer;
-    font-size: 18px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     transition: var(--transition);
+    color: var(--color-gray-dark);
 }
 
 .info-toggle:hover {
@@ -398,9 +399,6 @@ main {
     transform: none;
 }
 
-.btn-icon {
-    font-size: 1.2em;
-}
 
 /* Stats Section */
 .stats-section {
@@ -445,11 +443,6 @@ main {
 
 .stat-card:hover::before {
     transform: scaleX(1);
-}
-
-.stat-icon {
-    font-size: 2em;
-    margin-bottom: var(--spacing-sm);
 }
 
 .stat-label {
@@ -893,8 +886,8 @@ main {
         grid-template-columns: 1fr;
     }
 
-    .tab-button span:not(.tab-icon) {
-        display: none;
+    .tab-button span {
+        font-size: 13px;
     }
 }
 

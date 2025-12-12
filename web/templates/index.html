@@ -26,15 +26,12 @@
             <!-- Tab Navigation -->
             <div class="tab-container">
                 <button class="tab-button active" onclick="switchTab('input')" id="tab-input">
-                    <span class="tab-icon">⚙️</span>
                     <span>Transformation</span>
                 </button>
                 <button class="tab-button" onclick="switchTab('results')" id="tab-results" disabled>
-                    <span class="tab-icon">📊</span>
                     <span>Results</span>
                 </button>
                 <button class="tab-button" onclick="switchTab('insights')" id="tab-insights" disabled>
-                    <span class="tab-icon">🔍</span>
                     <span>Insights</span>
                 </button>
             </div>
@@ -45,7 +42,7 @@
                     <div class="section-header">
                         <h2 class="section-title">Configuration</h2>
                         <button class="info-toggle" onclick="toggleInfo()" title="Show/Hide Info">
-                            <span>ℹ️</span>
+                            <span>Info</span>
                         </button>
                     </div>
                     
@@ -90,7 +87,7 @@
                         <div class="form-group full-width">
                             <details class="advanced-options">
                                 <summary class="advanced-toggle">
-                                    <span>⚙️ Advanced Options</span>
+                                    <span>Advanced Options</span>
                                 </summary>
                                 <div class="advanced-content">
                                     <div class="checkbox-group">
@@ -109,7 +106,6 @@
 
                         <div class="form-group full-width">
                             <button id="transform-btn" onclick="transformQR()" class="btn-primary">
-                                <span class="btn-icon">🚀</span>
                                 <span class="btn-text">Transform QR Code</span>
                             </button>
                         </div>
@@ -135,22 +131,18 @@
                         <h2 class="section-title">Transformation Summary</h2>
                         <div class="stats-grid">
                             <div class="stat-card">
-                                <div class="stat-icon">🔢</div>
                                 <div class="stat-label">Module Squares to Change</div>
                                 <div class="stat-value" id="min-flips">-</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-icon">✓</div>
                                 <div class="stat-label">Within ECC Capacity</div>
                                 <div class="stat-value" id="within-ecc">-</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-icon">📈</div>
                                 <div class="stat-label">Change Percentage</div>
                                 <div class="stat-value" id="change-pct">-</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-icon">🏆</div>
                                 <div class="stat-label">Best Algorithm</div>
                                 <div class="stat-value" id="algorithm-name">-</div>
                             </div>
