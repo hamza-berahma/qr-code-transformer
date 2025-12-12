@@ -22,8 +22,17 @@ from src.insights import generate_insights
 app = FastAPI(title="QR Code Transformation Tool")
 
 # Setup templates and static files
-templates_dir = Path(__file__).parent / "templates"
-static_dir = Path(__file__).parent / "static"
+# Use absolute paths to ensure they work in production
+base_dir = Path(__file__).parent.absolute()
+templates_dir = base_dir / "templates"
+static_dir = base_dir / "static"
+
+# Ensure directories exist
+if not templates_dir.exists():
+    raise RuntimeError(f"Templates directory not found: {templates_dir}")
+if not static_dir.exists():
+    raise RuntimeError(f"Static directory not found: {static_dir}")
+
 templates = Jinja2Templates(directory=str(templates_dir))
 
 # Mount static files
@@ -33,7 +42,10 @@ app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     """Main page."""
-    return templates.TemplateResponse(request, "index.html")
+    try:
+        return templates.TemplateResponse("index.html", {"request": request})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Template error: {str(e)}")
 
 
 @app.post("/api/transform")
