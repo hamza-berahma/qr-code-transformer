@@ -1,36 +1,76 @@
 # QR Code Transformation Tool
 
-Transform a QR code encoding message A into a QR code that decodes to message B, using minimal module changes by exploiting Reed-Solomon error correction's non-bijective nature.
+<div align="center">
 
-## Problem Statement
+![QR Code Transformation](web/static/favicon.png)
 
-Given a QR code that encodes message A, find the minimal set of module (bit) flips required to transform it into a QR code that decodes to message B. This exploits the fact that Reed-Solomon error correction is non-bijective: multiple bit patterns can decode to the same message.
+**Transform QR codes with minimal module changes using Reed-Solomon error correction**
 
-## Features
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Railway](https://img.shields.io/badge/Deployed%20on-Railway-black.svg)](https://railway.app)
 
-- **Minimal Transformation**: Find the smallest number of module changes to transform QR(A) → QR(B)
-- **ECC-Aware**: Respect error correction capacity or find absolute minimum
-- **Dual Algorithms**: Both exact (optimal) and heuristic (fast) approaches
-- **Visualization**: See exactly which modules need to be flipped
-- **Web & Desktop**: FastAPI web interface and Tkinter desktop GUI
-- **Educational**: Insights into ECC capacity, RS block structure, and transformation analysis
+[Live Demo](#-live-demo) • [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Documentation](#-documentation)
 
-## Installation
+</div>
+
+## 🎯 Overview
+
+Transform a QR code encoding message **A** into a QR code that decodes to message **B**, using minimal module changes by exploiting Reed-Solomon error correction's non-bijective nature.
+
+This project implements **four advanced algorithms** (Naive, ILP, QArt, and Hybrid Control Model) to find the optimal transformation with the fewest module flips.
+
+## ✨ Features
+
+- **🔬 Four Algorithms**: Naive, ILP (Integer Linear Programming), QArt (RS Linearity), and Hybrid Control Model
+- **🎯 Optimal Results**: Automatically tests all 4 ECC levels (L, M, Q, H) and selects the best combination
+- **🌐 Modern Web Interface**: Beautiful, responsive SPA-like UI with real-time transformations
+- **🖥️ Desktop GUI**: Tkinter-based desktop application
+- **📊 Detailed Insights**: ECC capacity analysis, algorithm comparison, and transformation statistics
+- **📈 Visualization**: Side-by-side comparison of original, target, transformed, and change highlights
+- **⚡ Fast & Efficient**: Optimized algorithms with lazy loading and caching
+- **🚀 Production Ready**: Deployed on Railway with health checks and auto-scaling
+
+## 🚀 Live Demo
+
+**Try it now**: [https://web-production-a66f0.up.railway.app/](https://web-production-a66f0.up.railway.app/)
+
+The web interface provides:
+- Real-time QR code transformation
+- Algorithm comparison across all ECC levels
+- Visual change highlighting
+- Detailed performance metrics
+
+## 📦 Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip package manager
+
+### Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/hamza-berahma/qr-code-transformer.git
+cd qr-code-transformer
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Usage
+## 💻 Usage
 
-### Web Interface
+### Web Interface (Recommended)
 
 ```bash
+# Start the web server
 cd web
-uvicorn app:app --reload
+python -m uvicorn app:app --reload
 ```
 
-Visit `http://localhost:8000` to use the web interface.
+Visit `http://localhost:8000` to access the web interface.
 
 ### Desktop GUI
 
@@ -43,129 +83,170 @@ python desktop/gui.py
 ```python
 from src.transformer import QRTransformer
 
+# Initialize transformer
 transformer = QRTransformer()
-result = transformer.transform(message_a="Hello", message_b="World")
+
+# Transform QR code
+result = transformer.transform(
+    message_a="Hello",
+    message_b="World"
+)
+
+# Access results
 print(f"Minimal changes: {result.min_flips}")
 print(f"Modules to flip: {result.flip_positions}")
+print(f"Within ECC capacity: {result.within_ecc}")
+print(f"Best algorithm: {result.algorithm}")
 ```
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```
-qr/
-├── src/              # Core transformation logic
-├── web/              # FastAPI web interface
-├── desktop/          # Tkinter desktop GUI
-├── tests/            # Test suite
-└── examples/         # Example QR codes
+qr-code-transformer/
+├── src/                    # Core transformation algorithms
+│   ├── transformer.py      # Main transformer (orchestrates all algorithms)
+│   ├── ilp_transformer.py  # ILP-based optimal solver
+│   ├── qart_transformer.py # QArt algorithm (RS linearity)
+│   ├── hybrid_transformer.py # Hybrid Control Model
+│   ├── qr_encoder.py       # QR code encoding/decoding
+│   ├── rs_analysis.py      # Reed-Solomon analysis
+│   └── visualizer.py       # Visualization utilities
+├── web/                    # FastAPI web application
+│   ├── app.py              # FastAPI application
+│   ├── templates/          # HTML templates
+│   └── static/             # CSS, JS, favicon
+├── desktop/                # Desktop GUI application
+├── tests/                  # Comprehensive test suite
+│   ├── integration/        # Integration tests
+│   └── e2e/               # End-to-end tests
+├── examples/               # Example scripts
+└── paper/                  # Research paper (LaTeX)
 ```
 
-## Algorithm
+## 🔬 Algorithms
 
-The transformation algorithm works by:
+### 1. Naive Algorithm
+Direct module flipping without ECC exploitation. Baseline for comparison.
 
-1. Encoding both messages A and B into QR codes
-2. Extracting module matrices and codewords
-3. Analyzing Reed-Solomon error correction structure
-4. Finding alternative valid bit patterns that decode to B
-5. Computing minimal flip set using exact/heuristic search
+### 2. ILP (Integer Linear Programming)
+Optimal solution using OR-Tools/SCIP solver. Guarantees minimum flips within ECC capacity.
 
-## Testing
+### 3. QArt Algorithm
+Heuristic using Reed-Solomon linearity, padding bits, and coordinate descent. Fast and effective.
 
-The project includes comprehensive test coverage:
+### 4. Hybrid Control Model ⭐
+**Our novel approach**: Two-phase algorithm combining:
+- **Phase 1**: Padding control (zero-error mathematical manipulation)
+- **Phase 2**: Strategic error injection (RS error budget utilization)
 
-### Test Structure
-- **Unit Tests** (`tests/`): Test individual components in isolation
-- **Integration Tests** (`tests/integration/`): Test API endpoints and component interactions
-- **E2E Tests** (`tests/e2e/`): Test complete workflows end-to-end
+## 📊 Performance
 
-### Running Tests
+The transformer automatically:
+- Tests all 4 ECC levels (L ~7%, M ~15%, Q ~25%, H ~30%)
+- Runs all applicable algorithms (QArt, ILP, Hybrid)
+- Selects the combination with minimum module flips
+- Provides detailed comparison statistics
+
+## 🧪 Testing
 
 ```bash
 # Run all tests
-make test-all
-# or
 pytest tests/ -v
 
-# Run only unit tests
-make test-unit
-# or
-pytest tests/ -m "unit" -v
-
-# Run only integration tests
-make test-integration
-# or
-pytest tests/integration/ -m "integration" -v
-
-# Run only E2E tests
-make test-e2e
-# or
-pytest tests/e2e/ -m "e2e" -v
-
 # Run with coverage
-make test-cov
-# or
 pytest tests/ --cov=src --cov-report=html
+
+# Run specific test types
+pytest tests/ -m unit        # Unit tests
+pytest tests/ -m integration # Integration tests
+pytest tests/ -m e2e         # End-to-end tests
 ```
 
-### Test Markers
+## 🚢 Deployment
 
-Tests are marked with:
-- `@pytest.mark.unit` - Unit tests (fast)
-- `@pytest.mark.integration` - Integration tests
-- `@pytest.mark.e2e` - End-to-end tests
-- `@pytest.mark.slow` - Slow running tests
+### Railway (Recommended)
 
-### CI/CD
+The app is configured for Railway deployment:
 
-Tests run automatically on GitHub Actions for:
-- Python 3.8, 3.9, 3.10, 3.11
-- Unit, integration, and E2E test suites
-- Code coverage reporting
+```bash
+# Railway auto-detects and deploys from GitHub
+# Configuration files:
+# - railway.json
+# - railway.toml
+# - Procfile
+```
 
-## Development
+### Docker
 
-### Code Formatting
+```bash
+docker build -t qr-transformer .
+docker run -p 8000:8000 qr-transformer
+```
+
+### Other Platforms
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions for:
+- Render.com
+- Heroku
+- Local production
+
+## 📚 Documentation
+
+- **API Documentation**: Available at `/docs` when running the web server
+- **Research Paper**: See `paper/` directory for detailed algorithm descriptions
+- **Deployment Guide**: [DEPLOYMENT.md](DEPLOYMENT.md)
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## 🛠️ Development
 
 ```bash
 # Format code
-make format
-# or
 black src/ web/ desktop/ tests/
 
-# Check formatting
-make lint
+# Run linter
+flake8 src/ web/ desktop/
+
+# Run tests
+pytest tests/ -v
 ```
 
-### Project Structure
+## 📄 License
 
-```
-qr/
-├── src/              # Core transformation logic
-├── web/              # FastAPI web interface
-├── desktop/          # Tkinter desktop GUI
-├── tests/             # Test suite
-│   ├── unit/         # Unit tests
-│   ├── integration/  # Integration tests
-│   └── e2e/          # End-to-end tests
-└── examples/         # Example scripts
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## License
+## 🙏 Acknowledgments
 
-MIT License - see [LICENSE](LICENSE) file for details.
+- **qrcode** library for QR code generation
+- **ortools** for Integer Linear Programming optimization
+- **FastAPI** for the modern web framework
+- **Reed-Solomon** error correction research community
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Changelog
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-See [CHANGELOG.md](CHANGELOG.md) for a list of changes.
+## 📝 Changelog
 
-## Acknowledgments
+See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes.
 
-- Uses `qrcode` library for QR code generation
-- Uses `ortools` for Integer Linear Programming optimization
-- Inspired by research on QR code error correction exploitation
+## 🔗 Links
 
+- **Live Demo**: [https://web-production-a66f0.up.railway.app/](https://web-production-a66f0.up.railway.app/)
+- **GitHub Repository**: [https://github.com/hamza-berahma/qr-code-transformer](https://github.com/hamza-berahma/qr-code-transformer)
+- **Issues**: [GitHub Issues](https://github.com/hamza-berahma/qr-code-transformer/issues)
+
+---
+
+<div align="center">
+
+Made with ❤️ by [hamza-berahma](https://github.com/hamza-berahma)
+
+⭐ Star this repo if you find it useful!
+
+</div>

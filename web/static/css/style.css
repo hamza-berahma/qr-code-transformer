@@ -63,6 +63,24 @@ header {
     justify-content: space-between;
 }
 
+.header-logo-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.header-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    transition: var(--transition);
+}
+
+.header-logo:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
 .header-title h1 {
     font-size: 1.875em;
     font-weight: 600;
