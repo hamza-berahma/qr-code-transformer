@@ -72,6 +72,9 @@ docker-fix.sh
 *.bak
 *.swp
 
+# Deployment symlinks (actual files in .deployment/)
+# These are symlinks, but we track them for deployment platforms
+
 # OS
 .DS_Store
 Thumbs.db
