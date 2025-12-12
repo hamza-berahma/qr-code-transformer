@@ -7,7 +7,8 @@ builder = "nixpacks"
 
 [deploy]
 # Start command - Railway sets PORT environment variable
-startCommand = "python -m uvicorn web.app:app --host 0.0.0.0 --port $PORT"
+# Use sh -c to expand ${PORT:-8000} with shell expansion
+startCommand = "sh -c 'python -m uvicorn web.app:app --host 0.0.0.0 --port ${PORT:-8000}'"
 
 # Health check configuration
 healthcheckPath = "/api/health"
@@ -27,4 +28,3 @@ cpu = 0.5     # CPU shares
 PYTHONUNBUFFERED = "1"
 PYTHONDONTWRITEBYTECODE = "1"
 WORKERS = "1"
-
