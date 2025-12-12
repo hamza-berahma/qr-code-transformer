@@ -39,6 +39,15 @@ templates = Jinja2Templates(directory=str(templates_dir))
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
+@app.on_event("startup")
+async def startup_event():
+    """Log successful startup."""
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    logger.info("QR Code Transformer API started successfully")
+
+
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     """Main page."""
