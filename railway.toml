@@ -6,8 +6,8 @@
 builder = "nixpacks"
 
 [deploy]
-# Start command - Railway will set PORT automatically
-startCommand = "python -m uvicorn web.app:app --host 0.0.0.0"
+# Start command - Railway sets PORT environment variable
+startCommand = "python -m uvicorn web.app:app --host 0.0.0.0 --port $PORT"
 
 # Health check configuration
 healthcheckPath = "/api/health"

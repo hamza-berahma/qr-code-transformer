@@ -258,7 +258,14 @@ async def transform_qr(
 @app.get("/api/health")
 async def health():
     """Health check endpoint - lightweight, no imports needed."""
-    return {"status": "ok", "service": "qr-transformer"}
+    import os
+    port = os.environ.get("PORT", "8000")
+    return {
+        "status": "ok", 
+        "service": "qr-transformer",
+        "port": port,
+        "host": "0.0.0.0"
+    }
 
 @app.get("/api/ready")
 async def ready():
