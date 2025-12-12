@@ -116,52 +116,60 @@ async def transform_qr(
         qr_b = transformer.encoder.encode(message_b)
         matrix_b = qr_b.module_matrix
         
-        # Ensure same dimensions
-        if matrix_a.shape != matrix_b.shape:
-            min_h = min(matrix_a.shape[0], matrix_b.shape[0])
-            min_w = min(matrix_a.shape[1], matrix_b.shape[1])
-            matrix_a = matrix_a[:min_h, :min_w]
-            matrix_b = matrix_b[:min_h, :min_w]
-            if result.transformed_matrix is not None:
-                result.transformed_matrix = result.transformed_matrix[:min_h, :min_w]
+        # Align all matrices to the same size FIRST (before any transformation)
+        # Use the maximum dimensions to ensure all QR codes are properly aligned
+        max_height = max(matrix_a.shape[0], matrix_b.shape[0])
+        max_width = max(matrix_a.shape[1], matrix_b.shape[1])
         
-        # Ensure transformed matrix exists and has correct dimensions
-        if result.transformed_matrix is None:
-            # Fallback: create transformed matrix from matrix_a with flips
-            result.transformed_matrix = matrix_a.copy()
-            for row, col in result.flip_positions:
-                if 0 <= row < result.transformed_matrix.shape[0] and 0 <= col < result.transformed_matrix.shape[1]:
-                    result.transformed_matrix[row, col] = 1 - result.transformed_matrix[row, col]
-        
-        # Ensure transformed matrix matches matrix_a dimensions
-        if result.transformed_matrix.shape != matrix_a.shape:
-            min_h = min(result.transformed_matrix.shape[0], matrix_a.shape[0])
-            min_w = min(result.transformed_matrix.shape[1], matrix_a.shape[1])
-            result.transformed_matrix = result.transformed_matrix[:min_h, :min_w]
-            matrix_a = matrix_a[:min_h, :min_w]
-            matrix_b = matrix_b[:min_h, :min_w]
-        
-        # Generate individual QR code images
-        # Align all matrices to same size first
-        max_height = max(matrix_a.shape[0], matrix_b.shape[0], 
-                        result.transformed_matrix.shape[0] if result.transformed_matrix is not None else 0)
-        max_width = max(matrix_a.shape[1], matrix_b.shape[1],
-                       result.transformed_matrix.shape[1] if result.transformed_matrix is not None else 0)
+        # If transformed_matrix exists, include it in size calculation
+        if result.transformed_matrix is not None:
+            max_height = max(max_height, result.transformed_matrix.shape[0])
+            max_width = max(max_width, result.transformed_matrix.shape[1])
         
         def align_matrix(matrix, target_h, target_w):
+            """Align matrix to target size by padding with zeros (white) at bottom-right."""
             h, w = matrix.shape
             aligned = np.zeros((target_h, target_w), dtype=matrix.dtype)
+            # Copy original matrix to top-left (no shift)
             copy_h = min(h, target_h)
             copy_w = min(w, target_w)
             aligned[:copy_h, :copy_w] = matrix[:copy_h, :copy_w]
             return aligned
         
+        # Align base matrices first
         matrix_a_aligned = align_matrix(matrix_a, max_height, max_width)
         matrix_b_aligned = align_matrix(matrix_b, max_height, max_width)
-        if result.transformed_matrix is not None:
-            transformed_aligned = align_matrix(result.transformed_matrix, max_height, max_width)
+        
+        # Ensure transformed matrix exists and matches aligned dimensions
+        if result.transformed_matrix is None:
+            # Create from aligned matrix_a to ensure perfect alignment
+            result.transformed_matrix = matrix_a_aligned.copy()
+            for row, col in result.flip_positions:
+                if 0 <= row < result.transformed_matrix.shape[0] and 0 <= col < result.transformed_matrix.shape[1]:
+                    result.transformed_matrix[row, col] = 1 - result.transformed_matrix[row, col]
         else:
-            transformed_aligned = matrix_a_aligned.copy()
+            # Align transformed matrix to match base matrices
+            if result.transformed_matrix.shape != (max_height, max_width):
+                # Rebuild transformed matrix from aligned base to ensure perfect alignment
+                transformed_base = matrix_a_aligned.copy()
+                # Filter flip positions to valid coordinates
+                valid_flips = [(r, c) for r, c in result.flip_positions 
+                              if 0 <= r < max_height and 0 <= c < max_width]
+                for row, col in valid_flips:
+                    transformed_base[row, col] = 1 - transformed_base[row, col]
+                result.transformed_matrix = transformed_base
+            else:
+                # Already correct size, but ensure it's properly aligned
+                # Double-check by rebuilding from aligned base
+                transformed_base = matrix_a_aligned.copy()
+                valid_flips = [(r, c) for r, c in result.flip_positions 
+                              if 0 <= r < max_height and 0 <= c < max_width]
+                for row, col in valid_flips:
+                    transformed_base[row, col] = 1 - transformed_base[row, col]
+                result.transformed_matrix = transformed_base
+        
+        # All matrices are now aligned to the same size
+        transformed_aligned = result.transformed_matrix
         
         # Create individual images (no labels - labels are in HTML)
         original_img = visualizer.create_individual_qr_image(matrix_a_aligned, "")
