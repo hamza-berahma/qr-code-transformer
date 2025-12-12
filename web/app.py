@@ -62,6 +62,11 @@ async def transform_qr(
     Either provide message_a and message_b, or upload a QR image and provide message_b.
     """
     try:
+        # Lazy import to speed up startup
+        from src.transformer import QRTransformer
+        from src.visualizer import QRVisualizer
+        from src.insights import generate_insights
+        
         # ECC level is now automatically optimized - all 4 levels (L, M, Q, H) are tested
         transformer = QRTransformer(ecc_level='M')  # Default, but all levels will be tested automatically
         visualizer = QRVisualizer(module_size=10)
@@ -82,7 +87,7 @@ async def transform_qr(
             # Clean up
             os.remove(temp_path)
             
-            # Get original matrix from image
+            # Get original matrix from image (lazy import already done above)
             from src.utils import image_to_matrix
             matrix_a = image_to_matrix(img)
         else:
@@ -178,7 +183,7 @@ async def transform_qr(
         transformed_b64 = image_to_svg_base64(transformed_img)
         diff_b64 = image_to_svg_base64(diff_img)
         
-        # Generate insights
+        # Generate insights (already imported above)
         insights = generate_insights(result, transformer.encoder, matrix_a, matrix_b)
         
         # Convert numpy types to native Python types for JSON serialization
@@ -243,8 +248,18 @@ async def transform_qr(
 
 @app.get("/api/health")
 async def health():
-    """Health check endpoint."""
-    return {"status": "ok"}
+    """Health check endpoint - lightweight, no imports needed."""
+    return {"status": "ok", "service": "qr-transformer"}
+
+@app.get("/api/ready")
+async def ready():
+    """Readiness check - tests if core imports work."""
+    try:
+        # Quick import test
+        from src.transformer import QRTransformer
+        return {"status": "ready", "transformer": "available"}
+    except Exception as e:
+        return {"status": "not ready", "error": str(e)}
 
 
 if __name__ == "__main__":
