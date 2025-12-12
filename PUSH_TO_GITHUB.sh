@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "=== Push to GitHub ==="
+echo ""
+echo "Option 1: Create repo on GitHub.com first, then:"
+echo "  git remote add origin https://github.com/YOUR_USERNAME/qr-code-transformer.git"
+echo "  git push -u origin main"
+echo ""
+echo "Option 2: Use GitHub CLI (if installed):"
+echo "  gh repo create qr-code-transformer --public --source=. --remote=origin --push"
+echo ""
+echo "Current status:"
+git status --short | head -5
+echo ""
+echo "✅ paper/ is excluded from git"
+git ls-files | grep paper || echo "  (no paper files tracked)"
