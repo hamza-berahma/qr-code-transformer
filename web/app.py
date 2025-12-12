@@ -282,6 +282,7 @@ if __name__ == "__main__":
     import uvicorn
     import os
     # PORT is read from environment - Railway sets this automatically
+    # When running via 'python -m uvicorn', uvicorn reads PORT from os.environ
     port = int(os.environ.get("PORT", "8000"))
     workers = int(os.environ.get("WORKERS", "1"))
     uvicorn.run(
