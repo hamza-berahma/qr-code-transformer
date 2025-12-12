@@ -238,12 +238,13 @@ async def health():
 if __name__ == "__main__":
     import uvicorn
     import os
+    # PORT is read from environment - Railway sets this automatically
     port = int(os.environ.get("PORT", "8000"))
     workers = int(os.environ.get("WORKERS", "1"))
     uvicorn.run(
         app, 
         host="0.0.0.0", 
         port=port,
-        workers=workers if workers > 1 else None  # Only use workers if > 1
+        workers=workers if workers > 1 else None
     )
 
