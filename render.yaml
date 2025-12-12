@@ -3,7 +3,7 @@ services:
     name: qr-transformer
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: cd web && python -m uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}
+    startCommand: sh -c "cd web && python -m uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0

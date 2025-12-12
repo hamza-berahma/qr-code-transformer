@@ -18,7 +18,10 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
+# Set working directory to web for simpler commands
+WORKDIR /app/web
+
 # Run the application
 # Use sh to expand PORT environment variable
-CMD sh -c "cd web && uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"
+CMD sh -c "python -m uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"
 
